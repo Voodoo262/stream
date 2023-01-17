@@ -40,7 +40,7 @@ func (x *XargsFilter) LimitArgs(n int) *XargsFilter {
 
 // RunFilter implements the Filter interface: it reads a sequence of items
 // from arg.In and passes them as arguments to "command args...".
-func (x *XargsFilter) RunFilter(arg Arg) error {
+func (x *XargsFilter) RunFilter(arg Arg[string]) error {
 	items := append([]string(nil), x.args...)
 	added := 0 // Bytes added to items since last execution.
 	for s := range arg.In {
@@ -65,7 +65,7 @@ func (x *XargsFilter) RunFilter(arg Arg) error {
 	return nil
 }
 
-func runCommand(arg Arg, command string, args ...string) error {
+func runCommand(arg Arg[string], command string, args ...string) error {
 	cmd := exec.Command(command, args...)
 	output, err := cmd.StdoutPipe()
 	if err != nil {

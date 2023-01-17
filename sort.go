@@ -176,7 +176,7 @@ func (s sortState) Less(i, j int) bool {
 
 // RunFilter sorts items by the specified sorting keys. It implements
 // the Filter interface.
-func (s *SortFilter) RunFilter(arg Arg) error {
+func (s *SortFilter) RunFilter(arg Arg[string]) error {
 	state := sortState{s.cmp, nil}
 	for item := range arg.In {
 		state.data = append(state.data, item)

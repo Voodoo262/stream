@@ -3,8 +3,8 @@ package stream
 import "fmt"
 
 // Items emits items.
-func Items(items ...string) Filter {
-	return FilterFunc(func(arg Arg) error {
+func Items[T streamable](items ...T) Filter[T] {
+	return FilterFunc[T](func(arg Arg[T]) error {
 		for _, s := range items {
 			arg.Out <- s
 		}
@@ -13,8 +13,8 @@ func Items(items ...string) Filter {
 }
 
 // Repeat emits n copies of s.
-func Repeat(s string, n int) Filter {
-	return FilterFunc(func(arg Arg) error {
+func Repeat[T streamable](s T, n int) Filter[T] {
+	return FilterFunc[T](func(arg Arg[T]) error {
 		for i := 0; i < n; i++ {
 			arg.Out <- s
 		}
@@ -23,8 +23,8 @@ func Repeat(s string, n int) Filter {
 }
 
 // Numbers emits the integers x..y
-func Numbers(x, y int) Filter {
-	return FilterFunc(func(arg Arg) error {
+func Numbers(x, y int) Filter[string] {
+	return FilterFunc[string](func(arg Arg[string]) error {
 		for i := x; i <= y; i++ {
 			arg.Out <- fmt.Sprint(i)
 		}
@@ -33,8 +33,8 @@ func Numbers(x, y int) Filter {
 }
 
 // Map calls fn(x) for every item x and yields the outputs of the fn calls.
-func Map(fn func(string) string) Filter {
-	return FilterFunc(func(arg Arg) error {
+func Map[T streamable](fn func(T) T) Filter[T] {
+	return FilterFunc[T](func(arg Arg[T]) error {
 		for s := range arg.In {
 			arg.Out <- fn(s)
 		}
@@ -43,8 +43,8 @@ func Map(fn func(string) string) Filter {
 }
 
 // If emits every input x for which fn(x) is true.
-func If(fn func(string) bool) Filter {
-	return FilterFunc(func(arg Arg) error {
+func If[T streamable](fn func(T) bool) Filter[T] {
+	return FilterFunc[T](func(arg Arg[T]) error {
 		for s := range arg.In {
 			if fn(s) {
 				arg.Out <- s
@@ -55,8 +55,8 @@ func If(fn func(string) bool) Filter {
 }
 
 // Uniq squashes adjacent identical items in arg.In into a single output.
-func Uniq() Filter {
-	return FilterFunc(func(arg Arg) error {
+func Uniq() Filter[string] {
+	return FilterFunc[string](func(arg Arg[string]) error {
 		first := true
 		last := ""
 		for s := range arg.In {
@@ -72,8 +72,8 @@ func Uniq() Filter {
 
 // UniqWithCount squashes adjacent identical items in arg.In into a single
 // output prefixed with the count of identical items followed by a space.
-func UniqWithCount() Filter {
-	return FilterFunc(func(arg Arg) error {
+func UniqWithCount() Filter[string] {
+	return FilterFunc[string](func(arg Arg[string]) error {
 		current := ""
 		count := 0
 		for s := range arg.In {
@@ -94,9 +94,9 @@ func UniqWithCount() Filter {
 }
 
 // Reverse yields items in the reverse of the order it received them.
-func Reverse() Filter {
-	return FilterFunc(func(arg Arg) error {
-		var data []string
+func Reverse[T streamable]() Filter[T] {
+	return FilterFunc[T](func(arg Arg[T]) error {
+		var data []T
 		for s := range arg.In {
 			data = append(data, s)
 		}
@@ -109,8 +109,8 @@ func Reverse() Filter {
 
 // NumberLines prefixes its item with its index in the input sequence
 // (starting at 1) followed by a space.
-func NumberLines() Filter {
-	return FilterFunc(func(arg Arg) error {
+func NumberLines() Filter[string] {
+	return FilterFunc[string](func(arg Arg[string]) error {
 		line := 1
 		for s := range arg.In {
 			arg.Out <- fmt.Sprintf("%5d %s", line, s)
@@ -124,8 +124,8 @@ func NumberLines() Filter {
 // (separated by spaces) of the columns numbers passed as arguments.
 // Columns are numbered starting at 1.  If a column number is bigger
 // than the number of columns in an item, it is skipped.
-func Columns(columns ...int) Filter {
-	return FilterFunc(func(arg Arg) error {
+func Columns(columns ...int) Filter[string] {
+	return FilterFunc[string](func(arg Arg[string]) error {
 		for _, c := range columns {
 			if c <= 0 {
 				return fmt.Errorf("stream.Columns: invalid column number %d", c)

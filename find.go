@@ -43,7 +43,7 @@ func (f *FindFilter) SkipDirIf(fn func(d string) bool) *FindFilter {
 
 // RunFilter yields contents of a filesystem tree. It implements the
 // Filter interface.
-func (f *FindFilter) RunFilter(arg Arg) error {
+func (f *FindFilter) RunFilter(arg Arg[string]) error {
 	return filepath.Walk(f.dir, func(n string, s os.FileInfo, e error) error {
 		if e != nil {
 			return e

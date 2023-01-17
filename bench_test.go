@@ -1,7 +1,7 @@
 package stream_test
 
 import (
-	"github.com/ghemawat/stream"
+	"github.com/Voodoo262/stream"
 
 	"fmt"
 	"os"

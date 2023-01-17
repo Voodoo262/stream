@@ -12,8 +12,8 @@ import (
 // one line per input item. The standard output of the command is
 // split into lines and the lines form the output of the filter (with
 // trailing newlines removed).
-func Command(command string, args ...string) Filter {
-	return FilterFunc(func(arg Arg) error {
+func Command(command string, args ...string) Filter[string] {
+	return FilterFunc[string](func(arg Arg[string]) error {
 		cmd := exec.Command(command, args...)
 		input, err := cmd.StdinPipe()
 		if err != nil {

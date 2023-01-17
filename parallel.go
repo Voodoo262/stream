@@ -6,8 +6,8 @@ import "sync"
 // the Parallel Filter is divided up amongst the n copies.  The output
 // of the n copies is merged (in an unspecified order) and forms the
 // output of the Parallel filter.
-func Parallel(n int, f Filter) Filter {
-	return FilterFunc(func(arg Arg) error {
+func Parallel[T streamable](n int, f Filter[T]) Filter[T] {
+	return FilterFunc[T](func(arg Arg[T]) error {
 		var e filterErrors
 		var wg sync.WaitGroup
 		wg.Add(n)
