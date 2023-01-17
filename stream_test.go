@@ -38,7 +38,7 @@ func ExampleContents() {
 }
 
 func ExampleRun() {
-	err := stream.Run[string](
+	err := stream.Run(
 		stream.Items("line 1", "line 2"),
 		stream.WriteLines(os.Stdout),
 	)
@@ -50,7 +50,7 @@ func ExampleRun() {
 }
 
 func ExampleItems() {
-	stream.Run[string](
+	stream.Run(
 		stream.Items("hello", "world"),
 		stream.WriteLines(os.Stdout),
 	)
@@ -60,7 +60,7 @@ func ExampleItems() {
 }
 
 func ExampleNumbers() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(2, 5),
 		stream.WriteLines(os.Stdout),
 	)
@@ -72,7 +72,7 @@ func ExampleNumbers() {
 }
 
 func ExampleMap() {
-	stream.Run[string](
+	stream.Run(
 		stream.Items("hello", "there", "how", "are", "you?"),
 		stream.Map(func(s string) string {
 			return fmt.Sprintf("%d %s", len(s), s)
@@ -88,7 +88,7 @@ func ExampleMap() {
 }
 
 func ExampleIf() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 12),
 		stream.If(func(s string) bool { return len(s) > 1 }),
 		stream.WriteLines(os.Stdout),
@@ -100,7 +100,7 @@ func ExampleIf() {
 }
 
 func ExampleGrep() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 12),
 		stream.Grep(".."),
 		stream.WriteLines(os.Stdout),
@@ -112,7 +112,7 @@ func ExampleGrep() {
 }
 
 func ExampleGrepNot() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 12),
 		stream.GrepNot("^.$"),
 		stream.WriteLines(os.Stdout),
@@ -124,7 +124,7 @@ func ExampleGrepNot() {
 }
 
 func ExampleUniq() {
-	stream.Run[string](
+	stream.Run(
 		stream.Items("a", "b", "b", "c", "b"),
 		stream.Uniq(),
 		stream.WriteLines(os.Stdout),
@@ -137,7 +137,7 @@ func ExampleUniq() {
 }
 
 func ExampleUniqWithCount() {
-	stream.Run[string](
+	stream.Run(
 		stream.Items("a", "b", "b", "c"),
 		stream.UniqWithCount(),
 		stream.WriteLines(os.Stdout),
@@ -168,7 +168,7 @@ func ExampleParallel() {
 }
 
 func ExampleSubstitute() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 5),
 		stream.Substitute("(3)", "$1$1"),
 		stream.WriteLines(os.Stdout),
@@ -295,7 +295,7 @@ func ExampleSorter_By() {
 }
 
 func ExampleReverse() {
-	stream.Run[string](
+	stream.Run(
 		stream.Items("a", "b"),
 		stream.Reverse[string](),
 		stream.WriteLines(os.Stdout),
@@ -306,7 +306,7 @@ func ExampleReverse() {
 }
 
 func ExampleSample() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(100, 200),
 		stream.Sample[string](4),
 		stream.WriteLines(os.Stdout),
@@ -327,7 +327,7 @@ func ExampleSampleWithSeed() {
 }
 
 func ExampleFirst() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 10),
 		stream.First[string](3),
 		stream.WriteLines(os.Stdout),
@@ -339,7 +339,7 @@ func ExampleFirst() {
 }
 
 func ExampleLast() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 10),
 		stream.Last[string](2),
 		stream.WriteLines(os.Stdout),
@@ -350,7 +350,7 @@ func ExampleLast() {
 }
 
 func ExampleDropFirst() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 10),
 		stream.DropFirst(8),
 		stream.WriteLines(os.Stdout),
@@ -361,7 +361,7 @@ func ExampleDropFirst() {
 }
 
 func ExampleDropLast() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 10),
 		stream.DropLast[string](3),
 		stream.WriteLines(os.Stdout),
@@ -377,7 +377,7 @@ func ExampleDropLast() {
 }
 
 func ExampleNumberLines() {
-	stream.Run[string](
+	stream.Run(
 		stream.Items("a", "b"),
 		stream.NumberLines(),
 		stream.WriteLines(os.Stdout),
@@ -388,7 +388,7 @@ func ExampleNumberLines() {
 }
 
 func ExampleColumns() {
-	stream.Run[string](
+	stream.Run(
 		stream.Items("hello world"),
 		stream.Columns(2, 3, 1),
 		stream.WriteLines(os.Stdout),
@@ -428,7 +428,7 @@ func ExampleFind_error() {
 }
 
 func ExampleCat() {
-	stream.Run[string](
+	stream.Run(
 		stream.Cat("stream_test.go"),
 		stream.Grep("^func ExampleCat"),
 		stream.WriteLines(os.Stdout),
@@ -438,7 +438,7 @@ func ExampleCat() {
 }
 
 func ExampleWriteLines() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 3),
 		stream.WriteLines(os.Stdout),
 	)
@@ -462,7 +462,7 @@ func ExampleReadLines() {
 }
 
 func ExampleCommand() {
-	stream.Run[string](
+	stream.Run(
 		stream.Numbers(1, 100),
 		stream.Command("wc", "-l"),
 		stream.WriteLines(os.Stdout),
@@ -485,7 +485,7 @@ func ExampleCommand_outputOnly() {
 }
 
 func ExampleCommand_withError() {
-	err := stream.Run[string](stream.Command("no_such_command"))
+	err := stream.Run(stream.Command("no_such_command"))
 	if err == nil {
 		fmt.Println("execution of missing command succeeded unexpectedly")
 	}

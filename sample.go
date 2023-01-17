@@ -7,7 +7,7 @@ import (
 
 // Sample picks n pseudo-randomly chosen input items.  Different executions
 // of a Sample filter will chose different items.
-func Sample[T streamable](n int) Filter[T] {
+func Sample[T Streamable](n int) Filter[T] {
 	return SampleWithSeed[T](n, time.Now().UnixNano())
 }
 
@@ -15,7 +15,7 @@ func Sample[T streamable](n int) Filter[T] {
 // seed as the argument for its random number generation and therefore
 // different executions of SampleWithSeed with the same arguments will
 // chose the same items.
-func SampleWithSeed[T streamable](n int, seed int64) Filter[T] {
+func SampleWithSeed[T Streamable](n int, seed int64) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		// Could speed this up by using Algorithm Z from Vitter.
 		r := rand.New(rand.NewSource(seed))

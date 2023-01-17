@@ -3,7 +3,7 @@ package stream
 import "fmt"
 
 // Items emits items.
-func Items[T streamable](items ...T) Filter[T] {
+func Items[T Streamable](items ...T) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		for _, s := range items {
 			arg.Out <- s
@@ -13,7 +13,7 @@ func Items[T streamable](items ...T) Filter[T] {
 }
 
 // Repeat emits n copies of s.
-func Repeat[T streamable](s T, n int) Filter[T] {
+func Repeat[T Streamable](s T, n int) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		for i := 0; i < n; i++ {
 			arg.Out <- s
@@ -33,7 +33,7 @@ func Numbers(x, y int) Filter[string] {
 }
 
 // Map calls fn(x) for every item x and yields the outputs of the fn calls.
-func Map[T streamable](fn func(T) T) Filter[T] {
+func Map[T Streamable](fn func(T) T) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		for s := range arg.In {
 			arg.Out <- fn(s)
@@ -43,7 +43,7 @@ func Map[T streamable](fn func(T) T) Filter[T] {
 }
 
 // If emits every input x for which fn(x) is true.
-func If[T streamable](fn func(T) bool) Filter[T] {
+func If[T Streamable](fn func(T) bool) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		for s := range arg.In {
 			if fn(s) {
@@ -94,7 +94,7 @@ func UniqWithCount() Filter[string] {
 }
 
 // Reverse yields items in the reverse of the order it received them.
-func Reverse[T streamable]() Filter[T] {
+func Reverse[T Streamable]() Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		var data []T
 		for s := range arg.In {

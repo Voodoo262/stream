@@ -1,7 +1,7 @@
 package stream
 
 // First yields the first n items that it receives.
-func First[T streamable](n int) Filter[T] {
+func First[T Streamable](n int) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		seen := 0
 		for s := range arg.In {
@@ -30,12 +30,12 @@ func DropFirst[T string](n int) Filter[T] {
 }
 
 // ring is a circular buffer.
-type ring[T streamable] struct {
+type ring[T Streamable] struct {
 	buf     []T
 	next, n int
 }
 
-func newRing[T streamable](n int) *ring[T] { return &ring[T]{buf: make([]T, n)} }
+func newRing[T Streamable](n int) *ring[T] { return &ring[T]{buf: make([]T, n)} }
 func (r *ring[T]) empty() bool             { return r.n == 0 }
 func (r *ring[T]) full() bool              { return r.n == len(r.buf) }
 func (r *ring[T]) pushBack(s T) {
@@ -55,7 +55,7 @@ func (r *ring[T]) popFront() T {
 }
 
 // Last yields the last n items that it receives.
-func Last[T streamable](n int) Filter[T] {
+func Last[T Streamable](n int) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		r := newRing[T](n)
 		for s := range arg.In {
@@ -69,7 +69,7 @@ func Last[T streamable](n int) Filter[T] {
 }
 
 // DropLast yields all items except for the last n items that it receives.
-func DropLast[T streamable](n int) Filter[T] {
+func DropLast[T Streamable](n int) Filter[T] {
 	return FilterFunc[T](func(arg Arg[T]) error {
 		r := newRing[T](n)
 		for s := range arg.In {
