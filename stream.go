@@ -126,6 +126,11 @@ type Arg[T Streamable] struct {
 	Out   chan<- T
 	dummy bool // To allow later expansion
 }
+type Arg2[T Streamable, U Streamable] struct {
+	In    <-chan T
+	Out   chan<- U
+	dummy bool // To allow later expansion
+}
 
 // The Filter interface represents a process that takes as input a
 // sequence of strings from a channel and produces a sequence on
@@ -137,14 +142,19 @@ type Filter[T Streamable] interface {
 	// channel.
 	RunFilter(Arg[T]) error
 }
+type Flow[T Streamable, U Streamable] interface {
+	RunFlow(Arg2[T, U]) error
+}
 
 // FilterFunc is an adapter type that allows the use of ordinary
 // functions as Filters.  If f is a function with the appropriate
 // signature, FilterFunc(f) is a Filter that calls f.
 type FilterFunc[T Streamable] func(Arg[T]) error
+type FlowFunc[T Streamable, U Streamable] func(Arg2[T, U]) error
 
 // RunFilter calls this function. It implements the Filter interface.
-func (f FilterFunc[T]) RunFilter(arg Arg[T]) error { return f(arg) }
+func (f FilterFunc[T]) RunFilter(arg Arg[T]) error    { return f(arg) }
+func (f FlowFunc[T, U]) RunFlow(arg Arg2[T, U]) error { return f(arg) }
 
 const channelBuffer = 1000
 
@@ -168,11 +178,33 @@ func Sequence[T Streamable](filters ...Filter[T]) Filter[T] {
 		return e.getError()
 	})
 }
+func Sequence2[T Streamable, U Streamable](filters ...Flow[T, U]) Flow[T, U] {
+	if len(filters) == 1 {
+		return filters[0]
+	}
+	return FlowFunc[T, U](func(arg Arg2[T, U]) error {
+		e := &filterErrors{}
+		in := arg.In
+		var out <-chan U
+		for _, f := range filters {
+			c := make(chan U, channelBuffer)
+			go runFlow(f, Arg2[T, U]{In: in, Out: c}, e)
+			out = c
+		}
+		for s := range out {
+			arg.Out <- s
+		}
+		return e.getError()
+	})
+}
 
 // Run executes the sequence of filters and discards all output.
 // It returns either nil, an error if any filter reported an error.
 func Run[T Streamable](filters ...Filter[T]) error {
 	return ForEach(Sequence(filters...), func(s T) {})
+}
+func Run2[T Streamable, U Streamable](filters ...Flow[T, U]) error {
+	return ForEach2(Sequence2(filters...), func(s U) {})
 }
 
 // ForEach calls fn(s) for every item s in the output of filter and
@@ -183,6 +215,17 @@ func ForEach[T Streamable](filter Filter[T], fn func(s T)) error {
 	out := make(chan T, channelBuffer)
 	e := &filterErrors{}
 	go runFilter(filter, Arg[T]{In: in, Out: out}, e)
+	for s := range out {
+		fn(s)
+	}
+	return e.getError()
+}
+func ForEach2[T Streamable, U Streamable](filter Flow[T, U], fn func(s U)) error {
+	in := make(chan T)
+	close(in)
+	out := make(chan U, channelBuffer)
+	e := &filterErrors{}
+	go runFlow(filter, Arg2[T, U]{In: in, Out: out}, e)
 	for s := range out {
 		fn(s)
 	}
@@ -204,6 +247,12 @@ func Contents[T Streamable](filters ...Filter[T]) ([]T, error) {
 
 func runFilter[T Streamable](f Filter[T], arg Arg[T], e *filterErrors) {
 	e.record(f.RunFilter(arg))
+	close(arg.Out)
+	for range arg.In { // Discard all unhandled input
+	}
+}
+func runFlow[T Streamable, U Streamable](f Flow[T, U], arg Arg2[T, U], e *filterErrors) {
+	e.record(f.RunFlow(arg))
 	close(arg.Out)
 	for range arg.In { // Discard all unhandled input
 	}
