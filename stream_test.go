@@ -38,7 +38,7 @@ func ExampleContents() {
 }
 
 func ExampleRun() {
-	err := stream.Run(
+	err := stream.Run[string](
 		stream.Items("line 1", "line 2"),
 		stream.WriteLines(os.Stdout),
 	)
@@ -50,7 +50,7 @@ func ExampleRun() {
 }
 
 func ExampleItems() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("hello", "world"),
 		stream.WriteLines(os.Stdout),
 	)
@@ -60,7 +60,7 @@ func ExampleItems() {
 }
 
 func ExampleNumbers() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(2, 5),
 		stream.WriteLines(os.Stdout),
 	)
@@ -72,7 +72,7 @@ func ExampleNumbers() {
 }
 
 func ExampleMap() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("hello", "there", "how", "are", "you?"),
 		stream.Map(func(s string) string {
 			return fmt.Sprintf("%d %s", len(s), s)
@@ -88,7 +88,7 @@ func ExampleMap() {
 }
 
 func ExampleIf() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 12),
 		stream.If(func(s string) bool { return len(s) > 1 }),
 		stream.WriteLines(os.Stdout),
@@ -100,7 +100,7 @@ func ExampleIf() {
 }
 
 func ExampleGrep() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 12),
 		stream.Grep(".."),
 		stream.WriteLines(os.Stdout),
@@ -112,7 +112,7 @@ func ExampleGrep() {
 }
 
 func ExampleGrepNot() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 12),
 		stream.GrepNot("^.$"),
 		stream.WriteLines(os.Stdout),
@@ -124,7 +124,7 @@ func ExampleGrepNot() {
 }
 
 func ExampleUniq() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("a", "b", "b", "c", "b"),
 		stream.Uniq(),
 		stream.WriteLines(os.Stdout),
@@ -137,7 +137,7 @@ func ExampleUniq() {
 }
 
 func ExampleUniqWithCount() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("a", "b", "b", "c"),
 		stream.UniqWithCount(),
 		stream.WriteLines(os.Stdout),
@@ -149,7 +149,7 @@ func ExampleUniqWithCount() {
 }
 
 func ExampleParallel() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("hello", "there", "how", "are", "you?"),
 		stream.Parallel(4,
 			stream.Map(func(s string) string {
@@ -168,7 +168,7 @@ func ExampleParallel() {
 }
 
 func ExampleSubstitute() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 5),
 		stream.Substitute("(3)", "$1$1"),
 		stream.WriteLines(os.Stdout),
@@ -182,7 +182,7 @@ func ExampleSubstitute() {
 }
 
 func ExampleSort() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("banana", "apple", "cheese", "apple"),
 		stream.Sort(),
 		stream.WriteLines(os.Stdout),
@@ -197,7 +197,7 @@ func ExampleSort() {
 func ExampleSort_multipleColumns() {
 	// Sort numerically by column 1. Break ties by sorting
 	// lexicographically by column 2.
-	stream.Run(
+	stream.Run[string](
 		stream.Items(
 			"1970 march",
 			"1970 feb",
@@ -215,7 +215,7 @@ func ExampleSort_multipleColumns() {
 }
 
 func ExampleSorter_Num() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items(
 			"a 100",
 			"b 20.3",
@@ -233,7 +233,7 @@ func ExampleSorter_Num() {
 }
 
 func ExampleSorter_NumDecreasing() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items(
 			"a 100",
 			"b 20",
@@ -251,7 +251,7 @@ func ExampleSorter_NumDecreasing() {
 }
 
 func ExampleSorter_Text() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items(
 			"10 bananas",
 			"20 apples",
@@ -267,7 +267,7 @@ func ExampleSorter_Text() {
 }
 
 func ExampleSorter_TextDecreasing() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items(
 			"10 bananas",
 			"20 apples",
@@ -283,7 +283,7 @@ func ExampleSorter_TextDecreasing() {
 }
 
 func ExampleSorter_By() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("bananas", "apples", "pears"),
 		stream.Sort().By(func(a, b string) bool { return len(a) < len(b) }),
 		stream.WriteLines(os.Stdout),
@@ -295,9 +295,9 @@ func ExampleSorter_By() {
 }
 
 func ExampleReverse() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("a", "b"),
-		stream.Reverse(),
+		stream.Reverse[string](),
 		stream.WriteLines(os.Stdout),
 	)
 	// Output:
@@ -306,18 +306,18 @@ func ExampleReverse() {
 }
 
 func ExampleSample() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(100, 200),
-		stream.Sample(4),
+		stream.Sample[string](4),
 		stream.WriteLines(os.Stdout),
 	)
 	// Output not checked since it is non-deterministic.
 }
 
 func ExampleSampleWithSeed() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 100),
-		stream.SampleWithSeed(2, 100),
+		stream.SampleWithSeed[string](2, 100),
 		stream.Sort().Num(1),
 		stream.WriteLines(os.Stdout),
 	)
@@ -327,9 +327,9 @@ func ExampleSampleWithSeed() {
 }
 
 func ExampleFirst() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 10),
-		stream.First(3),
+		stream.First[string](3),
 		stream.WriteLines(os.Stdout),
 	)
 	// Output:
@@ -339,9 +339,9 @@ func ExampleFirst() {
 }
 
 func ExampleLast() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 10),
-		stream.Last(2),
+		stream.Last[string](2),
 		stream.WriteLines(os.Stdout),
 	)
 	// Output:
@@ -350,7 +350,7 @@ func ExampleLast() {
 }
 
 func ExampleDropFirst() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 10),
 		stream.DropFirst(8),
 		stream.WriteLines(os.Stdout),
@@ -361,9 +361,9 @@ func ExampleDropFirst() {
 }
 
 func ExampleDropLast() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 10),
-		stream.DropLast(3),
+		stream.DropLast[string](3),
 		stream.WriteLines(os.Stdout),
 	)
 	// Output:
@@ -377,7 +377,7 @@ func ExampleDropLast() {
 }
 
 func ExampleNumberLines() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("a", "b"),
 		stream.NumberLines(),
 		stream.WriteLines(os.Stdout),
@@ -388,7 +388,7 @@ func ExampleNumberLines() {
 }
 
 func ExampleColumns() {
-	stream.Run(
+	stream.Run[string](
 		stream.Items("hello world"),
 		stream.Columns(2, 3, 1),
 		stream.WriteLines(os.Stdout),
@@ -398,7 +398,7 @@ func ExampleColumns() {
 }
 
 func ExampleFind() {
-	stream.Run(
+	stream.Run[string](
 		stream.Find(".").IfMode(os.FileMode.IsRegular),
 		stream.Grep("stream"),
 		stream.WriteLines(os.Stdout),
@@ -409,7 +409,7 @@ func ExampleFind() {
 }
 
 func ExampleFindFilter_SkipDirIf() {
-	stream.Run(
+	stream.Run[string](
 		stream.Find(".").SkipDirIf(func(d string) bool { return d == ".git" }),
 		stream.Grep("x"),
 		stream.WriteLines(os.Stdout),
@@ -420,7 +420,7 @@ func ExampleFindFilter_SkipDirIf() {
 }
 
 func ExampleFind_error() {
-	err := stream.Run(stream.Find("/no_such_dir"))
+	err := stream.Run[string](stream.Find("/no_such_dir"))
 	if err == nil {
 		fmt.Println("stream.Find did not return expected error")
 	}
@@ -428,7 +428,7 @@ func ExampleFind_error() {
 }
 
 func ExampleCat() {
-	stream.Run(
+	stream.Run[string](
 		stream.Cat("stream_test.go"),
 		stream.Grep("^func ExampleCat"),
 		stream.WriteLines(os.Stdout),
@@ -438,7 +438,7 @@ func ExampleCat() {
 }
 
 func ExampleWriteLines() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 3),
 		stream.WriteLines(os.Stdout),
 	)
@@ -449,7 +449,7 @@ func ExampleWriteLines() {
 }
 
 func ExampleReadLines() {
-	stream.Run(
+	stream.Run[string](
 		stream.ReadLines(bytes.NewBufferString("the\nquick\nbrown\nfox\n")),
 		stream.Sort(),
 		stream.WriteLines(os.Stdout),
@@ -462,7 +462,7 @@ func ExampleReadLines() {
 }
 
 func ExampleCommand() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 100),
 		stream.Command("wc", "-l"),
 		stream.WriteLines(os.Stdout),
@@ -472,7 +472,7 @@ func ExampleCommand() {
 }
 
 func ExampleCommand_outputOnly() {
-	stream.Run(
+	stream.Run[string](
 		stream.Command("find", ".", "-type", "f", "-print"),
 		stream.Grep(`^\./stream.*\.go$`),
 		stream.Sort(),
@@ -485,7 +485,7 @@ func ExampleCommand_outputOnly() {
 }
 
 func ExampleCommand_withError() {
-	err := stream.Run(stream.Command("no_such_command"))
+	err := stream.Run[string](stream.Command("no_such_command"))
 	if err == nil {
 		fmt.Println("execution of missing command succeeded unexpectedly")
 	}
@@ -493,7 +493,7 @@ func ExampleCommand_withError() {
 }
 
 func ExampleXargs() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 5),
 		stream.Xargs("echo"),
 		stream.WriteLines(os.Stdout),
@@ -503,7 +503,7 @@ func ExampleXargs() {
 }
 
 func ExampleXargsFilter_LimitArgs() {
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 5),
 		stream.Xargs("echo").LimitArgs(2),
 		stream.WriteLines(os.Stdout),
@@ -517,7 +517,7 @@ func ExampleXargsFilter_LimitArgs() {
 func ExampleXargs_splitArguments() {
 	// Xargs should split the long list of arguments into
 	// three executions to keep command length below 4096.
-	stream.Run(
+	stream.Run[string](
 		stream.Numbers(1, 2000),
 		stream.Xargs("echo"),
 		stream.Command("wc", "-l"),

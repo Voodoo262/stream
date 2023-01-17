@@ -13,13 +13,13 @@ func BenchmarkSingle(b *testing.B) {
 }
 
 func BenchmarkFive(b *testing.B) {
-	f := stream.FilterFunc(func(arg stream.Arg) error {
+	f := stream.FilterFunc[string](func(arg stream.Arg[string]) error {
 		for s := range arg.In {
 			arg.Out <- s
 		}
 		return nil
 	})
-	stream.Run(stream.Repeat("", b.N), f, f, f, f)
+	stream.Run[string](stream.Repeat("", b.N), f, f, f, f)
 }
 
 func BenchmarkWrite(b *testing.B) {
@@ -37,19 +37,19 @@ func BenchmarkWrite(b *testing.B) {
 func BenchmarkSample(b *testing.B) {
 	stream.Run(
 		stream.Repeat("hello", b.N),
-		stream.Sample(10),
+		stream.Sample[string](10),
 	)
 }
 
 func BenchmarkSort(b *testing.B) {
-	stream.Run(
+	stream.Run[string](
 		stream.Repeat("hello", b.N),
 		stream.Sort(),
 	)
 }
 
 func BenchmarkSort3(b *testing.B) {
-	stream.Run(
+	stream.Run[string](
 		stream.Repeat("the 3 musketeers", b.N),
 		stream.Sort().Num(2).Text(1).Text(3),
 	)
@@ -63,7 +63,7 @@ func BenchmarkCmd(b *testing.B) {
 }
 
 func BenchmarkXargs1(b *testing.B) {
-	stream.Run(
+	stream.Run[string](
 		stream.Repeat("hello", b.N),
 		stream.Xargs("true").LimitArgs(1),
 	)
