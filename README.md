@@ -1,6 +1,6 @@
 # Stream package
 
-This is a fork of [github.com/ghemawat/stream](https://github.com/ghemawat/stream)
+This is a fork of [github.com/ghemawat/stream](https://github.com/ghemawat/stream) that allows data types other than `string`
 
 Package stream provides filters that can be chained together in a manner
 similar to Unix pipelines.  A simple example that prints all go files
@@ -15,7 +15,7 @@ under the current directory:
 ## Installation
 
 ~~~~
-go get github.com/ghemawat/stream
+go get github.com/Voodoo262/stream
 ~~~~
 
 See godoc for further documentation and examples.
