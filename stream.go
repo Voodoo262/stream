@@ -115,7 +115,7 @@ func (e *filterErrors) getError() error {
 }
 
 type streamable interface {
-	string | rune
+	string | rune | byte
 }
 
 // Arg contains the data passed to Filter.Run. Arg.In is a channel that
